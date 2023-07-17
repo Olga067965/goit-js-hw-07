@@ -22,6 +22,6 @@ const galleryMarkup = galleryItems
 galleryList.innerHTML = galleryMarkup;
 
 const gallery = new SimpleLightbox(".gallery__link", {
-  captions: true,
-  captionDelay: 250,
+  captionsData: 'alt',
+  captionDelay: 250
 });

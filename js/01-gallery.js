@@ -1,44 +1,48 @@
 import { galleryItems } from "./gallery-items.js";
 // Change code below this line
 
-console.log(galleryItems);
+const gallery = document.querySelector(".gallery");
 
-const galleryList = document.querySelector(".gallery");
-
-function createGalleryItemMarkup({ preview, original, description }) {
-  return `
-    <li class="gallery__item">
-      <a class="gallery__link" href="${original}">
-        <img class="gallery__image" src="${preview}" data-source="${original}" alt="${description}" />
-      </a>
-    </li>
-  `;
-}
-
-const galleryMarkup = galleryItems
-  .map((item) => createGalleryItemMarkup(item))
+const galleryList = galleryItems.map(
+    ({
+      preview,
+      original,
+      description,
+    }) => `
+    <li class="gallery__item"> 
+    <a class="gallery__link" href="${original}"> 
+    <img class="gallery__image" src="${preview}" data-source="${original}" alt="${description}"/>
+    </a>
+    </li>`
+  )
   .join("");
 
-galleryList.insertAdjacentHTML("beforeend", galleryMarkup);
+gallery.insertAdjacentHTML("beforeend", galleryList);
 
-galleryList.addEventListener("click", (event) => {
-  event.preventDefault();
-
-  const { target } = event;
-
-  if (target.classList.contains("gallery__image")) {
-    const source = target.dataset.source;
-
-    const instance = basicLightbox.create(`
-      <img src="${source}" alt="${target.alt}" />
-    `);
-
-    instance.show();
+gallery.onclick = (evt) => {
+  if (evt.target.tagName !== "IMG") {
+    return;
   }
-});
+  evt.preventDefault();
+  const instance = basicLightbox.create(
+    `
+		<img src="${evt.target.dataset.source}" width="800" height="600">
+	`,
+    {
+      onShow: () => {
+        document.addEventListener("keydown", closeModal);
+      },
+      onClose: () => {
+        document.removeEventListener("keydown", closeModal);
+      },
+    }
+  );
+  instance.show();
 
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    basicLightbox.close();
+  function closeModal(evt) {
+    if (evt.code !== "Escape") {
+      return;
+    }
+    instance.close();
   }
-});
+};
